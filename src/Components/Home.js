@@ -24,22 +24,22 @@ const Home = () => {
       if (response.status !== 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      console.log("response is: ", response);
-      console.log("fetchUserData response.data", response.data);
+      // console.log("response is: ", response);
+      // console.log("fetchUserData response.data", response.data);
       const user = response.data;
-      console.log("Logged in user: ", user);
+      // console.log("Logged in user: ", user);
 
       // set user data to response.data
       if (user === "") {
         setAuthenticated(false);
       } else {
-        console.log("User to set is: ", user);
+        // console.log("User to set is: ", user);
 
         setUser(user);
         setAuthenticated(true);
       }
     } catch (error) {
-      console.error("Fetch error:", error);
+      // console.error("Fetch error:", error);
     } finally {
       setLoading(false);
     }

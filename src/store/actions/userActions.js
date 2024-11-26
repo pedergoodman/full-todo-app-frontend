@@ -5,12 +5,6 @@ import { useCookies } from "react-cookie";
 import { Cookies } from "react-cookie";
 
 const cookies = new Cookies();
-// const xsrfToken = cookies.get("XSRF-TOKEN");
-
-export const loginUser = createAsyncThunk("user/loginUser", async () => {
-  const response = await axios.get("api/v1/private", { withCredentials: true });
-  return response.data;
-});
 
 export const logoutUser = createAsyncThunk("user/logoutUser", async () => {
   const xsrfToken = cookies.get("XSRF-TOKEN");
