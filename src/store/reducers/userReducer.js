@@ -9,7 +9,7 @@ const initialState = {
     id: "",
     firstName: "",
     lastName: "",
-    // fullName: "",
+    fullName: "",
     email: "",
     oktaId: "",
   },

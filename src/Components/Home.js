@@ -41,7 +41,7 @@ const Home = () => {
   }, []);
 
   const message = isUserAuthenticated ? (
-    <h2>Welcome, {userDetails.name}!</h2>
+    <h2>Welcome, {userDetails.firstName}!</h2>
   ) : (
     <p>Please log in.</p>
   );
