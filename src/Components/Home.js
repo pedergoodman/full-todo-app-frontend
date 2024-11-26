@@ -17,7 +17,9 @@ const Home = () => {
     setLoading(true);
     try {
       // fetch user data returns response.data
-      const response = await axios.get("api/user", { withCredentials: true });
+      const response = await axios.get("api/v1/user", {
+        withCredentials: true,
+      });
       // check if response is ok
       if (response.status !== 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -32,7 +34,7 @@ const Home = () => {
         setAuthenticated(false);
       } else {
         console.log("User to set is: ", user);
-        
+
         setUser(user);
         setAuthenticated(true);
       }
@@ -52,7 +54,7 @@ const Home = () => {
       port = ":8080";
     }
     // redirect to the Okta login page (aka an api/<privateRoute>)
-    window.location.href = `//${window.location.hostname}${port}/api/private`;
+    window.location.href = `//${window.location.hostname}${port}/oauth2/authorization/okta`;
   };
 
   const logout = async () => {
@@ -63,11 +65,7 @@ const Home = () => {
     getUserData();
   }, [setAuthenticated, setLoading, setUser]);
 
-  const message = user ? (
-    <h2>Welcome, {user.name}!</h2>
-  ) : (
-    <p>Please log in.</p>
-  );
+  const message = user ? <h2>Welcome, {user.name}!</h2> : <p>Please log in.</p>;
 
   const button = authenticated ? (
     <div>
