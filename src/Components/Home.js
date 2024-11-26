@@ -1,9 +1,10 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "../App.css";
-import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { Box, Button } from "@mui/material";
+import { store } from "../store/store";
+import { logoutUser } from "../store/actions/userActions";
 
 const Home = () => {
   const [authenticated, setAuthenticated] = useState(false);
@@ -55,25 +56,7 @@ const Home = () => {
   };
 
   const logout = async () => {
-    const response = await axios.post("/api/logout", null, {
-      withCredentials: true,
-      headers: { "X-XSRF-TOKEN": cookies["XSRF-TOKEN"] },
-    });
-
-    console.log("Logout response:", response);
-    
-    if (response.status !== 200) {
-      console.log("Error logging out: ", response.status);
-      throw new Error(`HTTP error! status: ${response}`);
-    } else {
-      // handle redirect to home page/ logout page
-      console.log("Logged out successfully");
-      
-
-      window.location.href =
-        `${response.data.logoutUrl}?id_token_hint=${response.data.idToken}` +
-        `&post_logout_redirect_uri=${window.location.origin}`;
-    }
+    await store.dispatch(logoutUser());
   };
 
   useEffect(() => {
