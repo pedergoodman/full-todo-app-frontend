@@ -11,7 +11,7 @@ const Home = () => {
   const { loadingAuth, isUserAuthenticated, userDetails } = useSelector(
     (state) => state.user
   );
-  const {firstName, lastName, email } = userDetails;
+  const { firstName, lastName, email } = userDetails;
 
   const dispatch = useDispatch();
 
@@ -24,7 +24,7 @@ const Home = () => {
       port = ":8080";
     }
     console.log("location is: ", window.location.hostname);
-    
+
     // redirect to the Okta login page (aka an api/<privateRoute>)
     window.location.href = `//${window.location.hostname}${port}/api/privateRoute`;
 
@@ -40,18 +40,10 @@ const Home = () => {
     dispatch(authenticateUser());
   }, []);
 
-  const message = userDetails ? <h2>Welcome, {userDetails.firstName}!</h2> : <p>Please log in.</p>;
-
-  const button = isUserAuthenticated ? (
-    <div>
-      <Button color="primary" onClick={logout}>
-        Logout
-      </Button>
-    </div>
+  const message = isUserAuthenticated ? (
+    <h2>Welcome, {userDetails.name}!</h2>
   ) : (
-    <Button color="primary" onClick={login}>
-      Login
-    </Button>
+    <p>Please log in.</p>
   );
 
   if (loadingAuth) {
@@ -69,7 +61,6 @@ const Home = () => {
         }}
       >
         {message}
-        {button}
       </Box>
     </div>
   );

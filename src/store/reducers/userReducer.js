@@ -30,11 +30,15 @@ const userSlice = createSlice({
 });
 
 const userLogoutCases = (builder) => {
-  builder.addCase(logoutUser.pending, (state, action) => {});
+  builder.addCase(logoutUser.pending, (state, action) => {
+    state.error = null; // Clears any previous errors
+  });
   builder.addCase(logoutUser.fulfilled, (state, action) => {
     state = initialState;
   });
-  builder.addCase(logoutUser.rejected, (state, action) => {});
+  builder.addCase(logoutUser.rejected, (state, action) => {
+    state.error = action.error.message;
+  });
 };
 
 const userAuthenticationCases = (builder) => {
