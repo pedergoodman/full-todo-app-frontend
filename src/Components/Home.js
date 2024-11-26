@@ -4,46 +4,16 @@ import "../App.css";
 import { useCookies } from "react-cookie";
 import { Box, Button } from "@mui/material";
 import { store } from "../store/store";
-import { logoutUser } from "../store/actions/userActions";
+import { authenticateUser, logoutUser } from "../store/actions/userActions";
+import { useDispatch, useSelector } from "react-redux";
 
 const Home = () => {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(undefined);
-  const [cookies] = useCookies(["XSRF-TOKEN"]);
+  const { loadingAuth, isUserAuthenticated, userDetails } = useSelector(
+    (state) => state.user
+  );
+  const {firstName, lastName, email } = userDetails;
 
-  // get User data from the server/Okta
-  const getUserData = async () => {
-    setLoading(true);
-    try {
-      // fetch user data returns response.data
-      const response = await axios.get("api/v1/user", {
-        withCredentials: true,
-      });
-      // check if response is ok
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      // console.log("response is: ", response);
-      // console.log("fetchUserData response.data", response.data);
-      const user = response.data;
-      // console.log("Logged in user: ", user);
-
-      // set user data to response.data
-      if (user === "") {
-        setAuthenticated(false);
-      } else {
-        // console.log("User to set is: ", user);
-
-        setUser(user);
-        setAuthenticated(true);
-      }
-    } catch (error) {
-      // console.error("Fetch error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const dispatch = useDispatch();
 
   const login = () => {
     // grab the port number from the window.location
@@ -53,21 +23,26 @@ const Home = () => {
     if (port === ":3000") {
       port = ":8080";
     }
+    console.log("location is: ", window.location.hostname);
+    
     // redirect to the Okta login page (aka an api/<privateRoute>)
-    window.location.href = `//${window.location.hostname}${port}/oauth2/authorization/okta`;
+    window.location.href = `//${window.location.hostname}${port}/api/privateRoute`;
+
+    // ? this redirects back to localhost:8080, would like to get it to redirect to localhost:3000
+    // window.location.href = `//${window.location.hostname}${port}/oauth2/authorization/okta`;
   };
 
   const logout = async () => {
-    await store.dispatch(logoutUser());
+    await dispatch(logoutUser());
   };
 
   useEffect(() => {
-    getUserData();
-  }, [setAuthenticated, setLoading, setUser]);
+    dispatch(authenticateUser());
+  }, []);
 
-  const message = user ? <h2>Welcome, {user.name}!</h2> : <p>Please log in.</p>;
+  const message = userDetails ? <h2>Welcome, {userDetails.firstName}!</h2> : <p>Please log in.</p>;
 
-  const button = authenticated ? (
+  const button = isUserAuthenticated ? (
     <div>
       <Button color="primary" onClick={logout}>
         Logout
@@ -79,7 +54,7 @@ const Home = () => {
     </Button>
   );
 
-  if (loading) {
+  if (loadingAuth) {
     return <p>Loading...</p>;
   }
 

@@ -3,19 +3,22 @@ import { createSlice } from "@reduxjs/toolkit";
 import { logoutUser, authenticateUser } from "../actions/userActions";
 
 const initialState = {
+  loadingAuth: false,
   isUserAuthenticated: false,
   userDetails: {
     id: "",
-    name: "",
+    firstName: "",
+    lastName: "",
+    // fullName: "",
     email: "",
+    oktaId: "",
   },
+  error: null,
 };
 
 const userSlice = createSlice({
   name: "userStateSlice",
-  initialState: {
-    value: 0,
-  },
+  initialState: initialState,
   reducers: {
     resetUserState: () => initialState,
   },
@@ -35,9 +38,26 @@ const userLogoutCases = (builder) => {
 };
 
 const userAuthenticationCases = (builder) => {
-  builder.addCase(authenticateUser.pending, (state, action) => {});
-  builder.addCase(authenticateUser.fulfilled, (state, action) => {});
-  builder.addCase(authenticateUser.rejected, (state, action) => {});
+  builder.addCase(authenticateUser.pending, (state, action) => {
+    state.error = null; // Clears any previous errors
+    state.loadingAuth = true;
+  });
+  builder.addCase(authenticateUser.fulfilled, (state, action) => {
+    if (action.payload === "") {
+      state.isUserAuthenticated = false;
+    } else {
+      state.isUserAuthenticated = true;
+      state.userDetails = action.payload;
+    }
+
+    state.error = null;
+    state.loadingAuth = false;
+  });
+  builder.addCase(authenticateUser.rejected, (state, action) => {
+    state.isUserAuthenticated = false;
+    state.error = action.error.message;
+    state.loadingAuth = false;
+  });
 };
 
 // export any actions in the reducer (not counting extraReducers)
