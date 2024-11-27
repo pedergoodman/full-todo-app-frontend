@@ -31,7 +31,7 @@ const Home = () => {
         setAuthenticated(false);
       } else {
         console.log("User to set is: ", user);
-        
+
         setUser(user);
         setAuthenticated(true);
       }
@@ -61,14 +61,13 @@ const Home = () => {
     });
 
     console.log("Logout response:", response);
-    
+
     if (response.status !== 200) {
       console.log("Error logging out: ", response.status);
       throw new Error(`HTTP error! status: ${response}`);
     } else {
       // handle redirect to home page/ logout page
       console.log("Logged out successfully");
-      
 
       window.location.href =
         `${response.data.logoutUrl}?id_token_hint=${response.data.idToken}` +
@@ -80,11 +79,7 @@ const Home = () => {
     getUserData();
   }, [setAuthenticated, setLoading, setUser]);
 
-  const message = user ? (
-    <h2>Welcome, {user.name}!</h2>
-  ) : (
-    <p>Please log in.</p>
-  );
+  const message = user ? <h2>Welcome, {user.name}!</h2> : <p>Please log in.</p>;
 
   const button = authenticated ? (
     <div>
