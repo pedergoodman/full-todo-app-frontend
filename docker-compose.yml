@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .  # Path to the frontend Dockerfile is the current directory
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"  # Map container port 80 to host port 3000
+    env_file:
+      - ./.env  # Use the .env file for frontend variables
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

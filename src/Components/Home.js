@@ -43,7 +43,7 @@ const Home = () => {
 
   // Handle login redirection
   const login = () => {
-    const port = window.location.port === "3000" ? ":8080" : window.location.port;
+    const port = window.location.port === "3000" ? ":8081" : window.location.port;
     console.log(`Redirecting to login on port: ${port}`);
     window.location.href = `http://${window.location.hostname}${port}/oauth2/authorization/okta`;
   };

@@ -1,89 +1,130 @@
-Prerequisites
+# Full Todo App Frontend - Setup and Run Guide
 
-Node.js (16.x or higher) and npm (Node.js package manager)
+This guide will help you set up and run the frontend for the Full Todo App. Follow these steps to ensure your environment is properly configured.
 
-Okta Developer Account (for OAuth2 authentication)
+## Table of Contents
+1. Prerequisites
+2. Environment Setup
+   - Windows (PowerShell)
+   - macOS/Linux (Terminal)
+3. Running the Frontend
+4. Running with Docker
+5. Verifying Installation
+6. Troubleshooting
 
-Environment Setup
+---
+
+## Prerequisites
+
+- **Node.js (16.x or higher)**
+- **npm** (Node.js package manager)
+- **Okta Developer Account** (for OAuth2 authentication)
+
+## Environment Setup
 
 Before running the frontend, you need to configure the environment variables to interact with the backend and Okta OAuth2.
 
-Windows Users (PowerShell)
+### Windows (PowerShell)
 
-Open PowerShell.
+1. Open PowerShell.
+2. Navigate to the frontend project directory.
+3. Set the required environment variables using the following commands:
 
-Navigate to the frontend directory.
+   ```powershell
+   # Set the API URL for the backend
+   $env:REACT_APP_BACKEND_URL="http://localhost:8081/api/v1"
 
-Run the following commands to set the required environment variables:
+   # Set Okta variables for OAuth2
+   $env:REACT_APP_OKTA_OAUTH2_ISSUER="https://your-okta-issuer-domain/oauth2/default"
+   $env:REACT_APP_OKTA_OAUTH2_CLIENT_ID="your-okta-client-id"
+   $env:REACT_APP_OKTA_OAUTH2_CLIENT_SECRET="your-okta-client-secret"
+   $env:REACT_APP_OKTA_OAUTH2_SCOPES="openid,profile,offline_access"
+   ```
 
-# Set the API URL for the backend
-$env:REACT_APP_BACKEND_URL="http://localhost:8080/api/v1"
+   Replace `your-okta-issuer-domain`, `your-okta-client-id`, and `your-okta-client-secret` with the actual values from your Okta Developer Console.
 
-# Set Okta variables for OAuth2
-$env:REACT_APP_OKTA_OAUTH2_ISSUER="https://dev-74889125.okta.com/oauth2/default"
-$env:REACT_APP_OKTA_OAUTH2_CLIENT_ID="your-okta-client-id"
-$env:REACT_APP_OKTA_OAUTH2_CLIENT_SECRET="your-okta-client-secret"
-$env:REACT_APP_OKTA_OAUTH2_SCOPES="openid,profile,offline_access"
+### macOS/Linux (Terminal)
 
-Replace your-okta-client-id and your-okta-client-secret with the actual values from your Okta Developer Console.
+1. Open Terminal.
+2. Navigate to the frontend project directory.
+3. Set the required environment variables using the following commands:
 
-macOS/Linux Users (Terminal)
+   ```bash
+   # Set the API URL for the backend
+   export REACT_APP_BACKEND_URL="http://localhost:8081/api/v1"
 
-Open Terminal.
+   # Set Okta variables for OAuth2
+   export REACT_APP_OKTA_OAUTH2_ISSUER="https://your-okta-issuer-domain/oauth2/default"
+   export REACT_APP_OKTA_OAUTH2_CLIENT_ID="your-okta-client-id"
+   export REACT_APP_OKTA_OAUTH2_CLIENT_SECRET="your-okta-client-secret"
+   export REACT_APP_OKTA_OAUTH2_SCOPES="openid,profile,offline_access"
+   ```
 
-Navigate to the frontend directory.
+   Replace `your-okta-issuer-domain`, `your-okta-client-id`, and `your-okta-client-secret` with the actual values from your Okta Developer Console.
 
-Run the following commands to set the required environment variables:
+## Running the Frontend
 
-# Set the API URL for the backend
-export REACT_APP_BACKEND_URL="http://localhost:8080/api/v1"
-
-# Set Okta variables for OAuth2
-export REACT_APP_OKTA_OAUTH2_ISSUER="https://dev-74889125.okta.com/oauth2/default"
-export REACT_APP_OKTA_OAUTH2_CLIENT_ID="your-okta-client-id"
-export REACT_APP_OKTA_OAUTH2_CLIENT_SECRET="your-okta-client-secret"
-export REACT_APP_OKTA_OAUTH2_SCOPES="openid,profile,offline_access"
-
-Replace your-okta-client-id and your-okta-client-secret with the actual values from your Okta Developer Console.
-
-Step 2: Install Frontend Dependencies
+### Install Frontend Dependencies
 
 Before running the frontend, you need to install the required dependencies using npm.
 
-Open PowerShell (Windows) or Terminal (macOS/Linux).
+1. Open PowerShell (Windows) or Terminal (macOS/Linux).
+2. Navigate to the frontend project folder.
+3. Run the following command to install the dependencies:
 
-Navigate to the frontend project folder.
+   ```bash
+   npm install
+   ```
 
-Run the following command to install the dependencies:
+   This command installs all the dependencies listed in `package.json` that are required to run the frontend React app.
 
-npm install
-
-This command installs all the dependencies listed in package.json that are required to run the frontend React app.
-
-Step 3: Run the Frontend Development Server
+### Run the Frontend Development Server
 
 After installing the dependencies, start the development server:
 
-Run the following command to start the frontend:
+1. Run the following command to start the frontend:
 
-npm start
+   ```bash
+   npm start
+   ```
 
-The React development server will start, and you can access the app by going to http://localhost:3000 in your browser.
+   The React development server will start, and you can access the app by going to `http://localhost:3000` in your browser.
 
-Step 4: Verify the Application is Running
+## Running with Docker
 
-Once the frontend development server is running, open your browser and navigate to:
+To run the frontend as a Docker container:
 
-http://localhost:3000
+1. Ensure Docker is installed and running on your machine.
+2. Build the Docker image by running the following command in the frontend directory:
 
-You should see the React app and be able to interact with it, including logging in via Okta and making requests to the backend.
+   ```bash
+   docker build -t full-todo-frontend .
+   ```
 
-Troubleshooting
+3. Once the image is built, run the container:
 
-Environment Variable Issues: Double-check the values of REACT_APP_OKTA_OAUTH2_CLIENT_ID and REACT_APP_OKTA_OAUTH2_CLIENT_SECRET. Ensure they match the values from your Okta Developer Console.
+   ```bash
+   docker run -p 3000:80 --env-file .env full-todo-frontend
+   ```
 
-Backend Communication: Ensure the backend is running (http://localhost:8080) and that the CORS configuration allows the frontend to communicate with it.
+   Make sure the `.env` file is properly configured with the necessary environment variables, similar to the setup instructions above.
 
-Missing Dependencies: If the app doesn’t load correctly, run npm install again to ensure all dependencies are installed.
+## Verifying Installation
 
-Login and CSRF Issues: If you encounter issues with login or CSRF tokens, check the console for error messages and confirm that the backend is correctly set up to handle cross-origin requests and CSRF protection.
+To verify that everything is working correctly, follow these steps:
+
+1. **Access the Frontend Page**: Open a web browser and go to `http://localhost:3000`. You should see the frontend UI of the Full Todo App.
+2. **Login with Okta**: Attempt to log in through Okta. You should be redirected to the Okta login page and, upon successful login, returned to the app.
+3. **Check Backend Communication**: Ensure the frontend can communicate with the backend, and that you can see and interact with your todos as expected.
+
+## Troubleshooting
+
+- **Environment Variable Issues**: Double-check the values of `REACT_APP_OKTA_OAUTH2_CLIENT_ID` and `REACT_APP_OKTA_OAUTH2_CLIENT_SECRET`. Ensure they match the values from your Okta Developer Console.
+- **Backend Communication**: Ensure the backend is running (`http://localhost:8081`) and that the CORS configuration allows the frontend to communicate with it.
+- **Missing Dependencies**: If the app doesn’t load correctly, run `npm install` again to ensure all dependencies are installed.
+- **Login and CSRF Issues**: If you encounter issues with login or CSRF tokens, check the console for error messages and confirm that the backend is correctly set up to handle cross-origin requests and CSRF protection.
+
+---
+
+If you encounter any other issues, consult the official React and Okta documentation for additional guidance.
+
