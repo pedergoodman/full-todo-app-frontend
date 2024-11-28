@@ -1,14 +1,15 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "../App.css";
-import { useCookies } from "react-cookie";
 import { Box, Button } from "@mui/material";
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true); // Default to true since we're fetching data
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(undefined);
-  const [cookies] = useCookies(["XSRF-TOKEN"]);
+  const navigate = useNavigate();
 
   // Fetch user data from the server
   const getUserData = async () => {
@@ -21,6 +22,13 @@ const Home = () => {
         console.log("User data fetched successfully:", response.data);
         setUser(response.data);
         setAuthenticated(true);
+        
+        // Check if the CSRF token is set in the cookies
+        const csrfToken = Cookies.get("XSRF-TOKEN");
+        if (!csrfToken) {
+          console.warn("CSRF token not found in cookies after user data fetch! Trying to fetch it manually...");
+          await axios.get('/'); // Make an additional request to get the CSRF token
+        }
       } else {
         console.warn("No user data found.");
         setAuthenticated(false);
@@ -33,43 +41,38 @@ const Home = () => {
     }
   };
 
-
   // Handle login redirection
   const login = () => {
     const port = window.location.port === "3000" ? ":8080" : window.location.port;
     console.log(`Redirecting to login on port: ${port}`);
     window.location.href = `http://${window.location.hostname}${port}/oauth2/authorization/okta`;
-  };  
+  };
 
   // Handle logout
+  // Modified logout function in Home.js
   const logout = async () => {
+    let csrfToken = Cookies.get("XSRF-TOKEN");
+  
+    if (!csrfToken) {
+      console.error("CSRF token still missing! Cannot proceed with logout.");
+      console.log("Available Cookies:", document.cookie);
+      return;
+    }
+  
     try {
-      console.log("Logging out...");
-      const csrfToken = cookies["XSRF-TOKEN"];
-      if (!csrfToken) {
-        console.error("CSRF token missing in cookies! Checking via session...");
-        const csrfMeta = document.querySelector('meta[name="_csrf"]');
-        if (csrfMeta) {
-          csrfToken = csrfMeta.getAttribute("content");
-        }
-      }
-      if (!csrfToken) {
-        console.error("CSRF token still missing! Cannot proceed with logout.");
-        return;
-      }
-
-
-
-      const response = await axios.post("/api/logout", null, {
-        headers: { "X-XSRF-TOKEN": csrfToken },
-        withCredentials: true,
+      const response = await axios.post("/api/logout", {}, {
+        headers: {
+          "X-XSRF-TOKEN": csrfToken
+        },
+        withCredentials: true
       });
-
+  
       if (response.status === 200) {
-        console.log("Logout successful. Redirecting to login...");
-        setAuthenticated(false);
-        setUser(null);
-        window.location.href = "/";
+        console.log("Logged out successfully", response.data);
+        setAuthenticated(false); // Set authentication to false
+        navigate("/login"); // Explicitly navigate to the login page
+      } else {
+        console.error("Unexpected status during logout:", response.status);
       }
     } catch (error) {
       console.error("Error during logout:", error.response || error.message);
@@ -77,6 +80,7 @@ const Home = () => {
   };
 
   useEffect(() => {
+    // Fetch user data when component mounts
     getUserData();
   }, []);
 
@@ -97,10 +101,13 @@ const Home = () => {
       >
         {authenticated ? (
           <>
-            <h2>Welcome, {user?.name || "User"}!</h2>
-            <p>Email: {user?.email}</p>
+            <h2>Welcome, {user?.fullname || "User"}!</h2>
+            <p>Please log out until we implement other features, thanks!</p>
             <Button variant="contained" color="primary" onClick={logout}>
               Logout
+            </Button>
+            <Button variant="contained" color="secondary" onClick={() => navigate('/protected')} style={{ marginTop: '20px' }}>
+              Go to Protected Page
             </Button>
           </>
         ) : (
