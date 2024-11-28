@@ -1,70 +1,72 @@
-# Getting Started with Create React App
+Setting Up and Running the Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The frontend is built using React, and to run it locally, you'll need to set up environment variables and start the development server.
+Step 1: Set Environment Variables
 
-## Available Scripts
+For the frontend to interact with the backend and Okta, you need to set up a few environment variables. These include the API URLs for backend communication and Okta settings.
+Windows Users (Using PowerShell)
 
-In the project directory, you can run:
+    Open PowerShell on your computer.
+    Navigate to the frontend directory.
+    Run the following commands to set the required environment variables:
 
-### `npm start`
+# Set the API URL for the backend
+$env:REACT_APP_BACKEND_URL="http://localhost:8080/api/v1"
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+# Set Okta variables for OAuth2
+$env:REACT_APP_OKTA_OAUTH2_ISSUER="https://dev-74889125.okta.com/oauth2/default"
+$env:REACT_APP_OKTA_OAUTH2_CLIENT_ID="your-okta-client-id"
+$env:REACT_APP_OKTA_OAUTH2_CLIENT_SECRET="your-okta-client-secret"
+$env:REACT_APP_OKTA_OAUTH2_SCOPES="openid,profile,offline_access"
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Important: Replace your-okta-client-id and your-okta-client-secret with the actual values from your Okta Developer Console.
+macOS Users (Using Terminal)
 
-### `npm test`
+    Open Terminal on your macOS machine.
+    Navigate to the frontend directory.
+    Run the following commands to set the required environment variables:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Set the API URL for the backend
+export REACT_APP_BACKEND_URL="http://localhost:8080/api/v1"
 
-### `npm run build`
+# Set Okta variables for OAuth2
+export REACT_APP_OKTA_OAUTH2_ISSUER="https://dev-74889125.okta.com/oauth2/default"
+export REACT_APP_OKTA_OAUTH2_CLIENT_ID="your-okta-client-id"
+export REACT_APP_OKTA_OAUTH2_CLIENT_SECRET="your-okta-client-secret"
+export REACT_APP_OKTA_OAUTH2_SCOPES="openid,profile,offline_access"
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Important: Replace your-okta-client-id and your-okta-client-secret with the actual values from your Okta Developer Console.
+Step 2: Install Frontend Dependencies
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Before running the frontend app, you need to install the required dependencies using npm (Node.js package manager).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    Open PowerShell (Windows) or Terminal (macOS) and navigate to the frontend project folder.
+    Run the following command to install the dependencies:
 
-### `npm run eject`
+# For both Windows and macOS
+npm install
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+This command installs all the dependencies listed in package.json that are required to run the frontend React app.
+Step 3: Run the Frontend Development Server
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+After installing the dependencies, you can start the development server.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    In PowerShell (Windows) or Terminal (macOS), run the following command to start the frontend app:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# For both Windows and macOS
+npm start
 
-## Learn More
+    This will start the React development server. You can access the app by going to http://localhost:3000 in your browser.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Step 4: Verify the Application is Running
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Once the frontend development server starts, open your browser and go to:
 
-### Code Splitting
+    http://localhost:3000
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+You should see the React app running and be able to interact with it, logging in via Okta and making requests to the backend.
+Troubleshooting
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    If you encounter errors related to environment variables, double-check the values of REACT_APP_OKTA_OAUTH2_CLIENT_ID and REACT_APP_OKTA_OAUTH2_CLIENT_SECRET.
+    Ensure that the backend is running (http://localhost:8080), and that the CORS configuration is correct to allow the frontend to communicate with the backend.
+    If the app doesn’t load properly, try running npm install again to ensure all dependencies are correctly installed.

@@ -1,97 +1,84 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "../App.css";
-import { Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { Box, Button } from "@mui/material";
 
 const Home = () => {
   const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Default to true since we're fetching data
   const [user, setUser] = useState(undefined);
   const [cookies] = useCookies(["XSRF-TOKEN"]);
 
-  // get User data from the server/Okta
+  // Fetch user data from the server
   const getUserData = async () => {
     setLoading(true);
     try {
-      // fetch user data returns response.data
-      const response = await axios.get("api/user", { withCredentials: true });
-      // check if response is ok
-      if (response.status !== 200) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      console.log("response is: ", response);
-      console.log("fetchUserData response.data", response.data);
-      const user = response.data;
-      console.log("Logged in user: ", user);
+      console.log("Fetching user data...");
+      const response = await axios.get("/api/v1/user", { withCredentials: true });
 
-      // set user data to response.data
-      if (user === "") {
-        setAuthenticated(false);
-      } else {
-        console.log("User to set is: ", user);
-
-        setUser(user);
+      if (response.status === 200 && response.data) {
+        console.log("User data fetched successfully:", response.data);
+        setUser(response.data);
         setAuthenticated(true);
+      } else {
+        console.warn("No user data found.");
+        setAuthenticated(false);
       }
     } catch (error) {
-      console.error("Fetch error:", error);
+      console.error("Error fetching user data:", error.response || error.message);
+      setAuthenticated(false);
     } finally {
       setLoading(false);
     }
   };
 
+
+  // Handle login redirection
   const login = () => {
-    // grab the port number from the window.location
-    let port = window.location.port ? ":" + window.location.port : "";
+    const port = window.location.port === "3000" ? ":8080" : window.location.port;
+    console.log(`Redirecting to login on port: ${port}`);
+    window.location.href = `http://${window.location.hostname}${port}/oauth2/authorization/okta`;
+  };  
 
-    // set the port to 8080 if it's 3000
-    if (port === ":3000") {
-      port = ":8080";
-    }
-    // redirect to the Okta login page (aka an api/<privateRoute>)
-    window.location.href = `//${window.location.hostname}${port}/api/private`;
-  };
-
+  // Handle logout
   const logout = async () => {
-    const response = await axios.post("/api/logout", null, {
-      withCredentials: true,
-      headers: { "X-XSRF-TOKEN": cookies["XSRF-TOKEN"] },
-    });
+    try {
+      console.log("Logging out...");
+      const csrfToken = cookies["XSRF-TOKEN"];
+      if (!csrfToken) {
+        console.error("CSRF token missing in cookies! Checking via session...");
+        const csrfMeta = document.querySelector('meta[name="_csrf"]');
+        if (csrfMeta) {
+          csrfToken = csrfMeta.getAttribute("content");
+        }
+      }
+      if (!csrfToken) {
+        console.error("CSRF token still missing! Cannot proceed with logout.");
+        return;
+      }
 
-    console.log("Logout response:", response);
 
-    if (response.status !== 200) {
-      console.log("Error logging out: ", response.status);
-      throw new Error(`HTTP error! status: ${response}`);
-    } else {
-      // handle redirect to home page/ logout page
-      console.log("Logged out successfully");
 
-      window.location.href =
-        `${response.data.logoutUrl}?id_token_hint=${response.data.idToken}` +
-        `&post_logout_redirect_uri=${window.location.origin}`;
+      const response = await axios.post("/api/logout", null, {
+        headers: { "X-XSRF-TOKEN": csrfToken },
+        withCredentials: true,
+      });
+
+      if (response.status === 200) {
+        console.log("Logout successful. Redirecting to login...");
+        setAuthenticated(false);
+        setUser(null);
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.error("Error during logout:", error.response || error.message);
     }
   };
 
   useEffect(() => {
     getUserData();
-  }, [setAuthenticated, setLoading, setUser]);
-
-  const message = user ? <h2>Welcome, {user.name}!</h2> : <p>Please log in.</p>;
-
-  const button = authenticated ? (
-    <div>
-      <Button color="primary" onClick={logout}>
-        Logout
-      </Button>
-    </div>
-  ) : (
-    <Button color="primary" onClick={login}>
-      Login
-    </Button>
-  );
+  }, []);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -102,13 +89,28 @@ const Home = () => {
       <Box
         sx={{
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           height: "90vh",
         }}
       >
-        {message}
-        {button}
+        {authenticated ? (
+          <>
+            <h2>Welcome, {user?.name || "User"}!</h2>
+            <p>Email: {user?.email}</p>
+            <Button variant="contained" color="primary" onClick={logout}>
+              Logout
+            </Button>
+          </>
+        ) : (
+          <>
+            <h2>Please log in to access your account.</h2>
+            <Button variant="contained" color="primary" onClick={login}>
+              Login
+            </Button>
+          </>
+        )}
       </Box>
     </div>
   );
