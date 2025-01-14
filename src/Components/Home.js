@@ -1,11 +1,8 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import "../App.css";
-import { useCookies } from "react-cookie";
-import { Box, Button } from "@mui/material";
-import { store } from "../store/store";
-import { authenticateUser, logoutUser } from "../store/actions/userActions";
+import { Box } from "@mui/material";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import "../App.css";
+import { authenticateUser, logoutUser } from "../store/actions/userActions";
 
 const Home = () => {
   const { loadingAuth, isUserAuthenticated, userDetails } = useSelector(
